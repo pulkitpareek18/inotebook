@@ -1,10 +1,17 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom';
 
 
 const Login = (props) => {
     const [credentials, setCredentials] = useState({email: "", password: ""}) 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if(localStorage.getItem("token")){
+            navigate("/")
+        }
+        // eslint-disable-next-line
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -20,11 +27,12 @@ const Login = (props) => {
         if (json.success){
             // Save the auth token and redirect
             localStorage.setItem('token', json.authtoken); 
+            props.showAlert("success","Logged in Successfully.")
             navigate("/");
 
         }
         else{
-            alert("Invalid credentials");
+            props.showAlert("danger",json.error)
         }
     }
 
@@ -34,7 +42,8 @@ const Login = (props) => {
 
     return (
         <div>
-            <form  onSubmit={handleSubmit}>
+            <form className='container p-5'  onSubmit={handleSubmit}>
+                <h2 className='my-3 text-center'>Login to continue to iNotebook...</h2>
                 <div className="mb-3">
                     <label htmlFor="email" className="form-label">Email address</label>
                     <input type="email" className="form-control" value={credentials.email} onChange={onChange} id="email" name="email" aria-describedby="emailHelp" />
@@ -45,7 +54,7 @@ const Login = (props) => {
                     <input type="password" className="form-control" value={credentials.password} onChange={onChange} name="password" id="password" />
                 </div>
 
-                <button type="submit" className="btn btn-primary">Submit</button>
+                <button type="submit" className="btn btn-primary">Login</button>
             </form>
         </div>
     )
